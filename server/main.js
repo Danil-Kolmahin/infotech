@@ -1,19 +1,8 @@
 'use strict';
 
-import http from 'http';
-import { readFileSync, writeFileSync } from 'fs';
-
-const readDB = () => JSON.parse(
-  readFileSync(new URL('./db.json', import.meta.url)).toString(),
-);
-
-const writeDB = (db) => writeFileSync(
-  './server/db.json', new Uint8Array(Buffer.from(parseJSON(db))),
-);
-
-let db = readDB();
-
-const parseJSON = (str) => JSON.stringify(str, null, 3);
+const http =  require('http');
+const { addTodo, deleteTodo, getTodos, getUser, updateTodo } =  require('./dbLogic');
+const { parseJSON } =  require('./utils');
 
 const PORT = process.env.PORT ?? 8000;
 
@@ -21,50 +10,29 @@ const routing = {
   'GET': {
     '/auth': async (req) => {
       const { email, password } = JSON.parse(req.body);
-      return db.users
-        .some(u => u.email === email && u.password.toString() === password)
-        .toString();
+      return (!!getUser(email, password)).toString();
     },
     '/todos': async (req) => {
       const { email, password } = JSON.parse(req.body);
-      const user = db.users
-        .find(u => u.email === email && u.password.toString() === password);
-      if (!user) return 'Not allowed';
-      if (user.isAdmin) return db.users.map(u => u.todos);
-      else return user.todos;
+      return getTodos(email, password);
     },
   },
   'POST': {
     '/todos': async (req) => {
       const { title, body, email, password } = JSON.parse(req.body);
-      const userId = db.users
-        .findIndex(u => u.email === email && u.password.toString() === password);
-      if (userId === -1) return 'Not allowed';
-      db.users[userId].todos.push({ title, body });
-      writeDB(db);
+      addTodo(title, body, email, password);
     },
   },
   'PUT': {
     '/todos': async (req) => {
       const { title, body, email, password } = JSON.parse(req.body);
-      const userId = db.users
-        .findIndex(u => u.email === email && u.password.toString() === password);
-      if (userId === -1) return 'Not allowed';
-      db.users[userId].todos = db.users[userId].todos.filter(todo => todo.title !== title);
-      db.users[userId].todos.push({ title, body });
-      writeDB(db);
-      return db.todos;
+      updateTodo(title, body, email, password);
     },
   },
   'DELETE': {
     '/todos': async (req) => {
       const { title, email, password } = JSON.parse(req.body);
-      const userId = db.users
-        .findIndex(u => u.email === email && u.password.toString() === password);
-      if (userId === -1) return 'Not allowed';
-      db.users[userId].todos = db.users[userId].todos.filter(todo => todo.title !== title);
-      writeDB(db);
-      return db.todos;
+      deleteTodo(title, email, password);
     },
   },
   'OPTIONS': {},

@@ -1,5 +1,5 @@
-import { Questioner } from 'cli-features';
-import http from 'http';
+const { Questioner } =  require('cli-features');
+const http =  require('http');
 
 const parseJSON = (str) => JSON.stringify(str, null, 3);
 

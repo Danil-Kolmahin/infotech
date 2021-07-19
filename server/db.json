@@ -1,24 +1,28 @@
 {
    "users": [
       {
-         "email": "a",
-         "password": "123",
+         "email": "user",
+         "password": "1111",
          "isAdmin": false,
          "todos": [
             {
-               "title": "sdfsdf",
-               "body": "sdfsdsfsfsdf"
+               "title": "Title0",
+               "body": "Body0"
+            },
+            {
+               "title": "Title1",
+               "body": "Body1"
             }
          ]
       },
       {
-         "email": "b",
-         "password": "123",
+         "email": "admin",
+         "password": "1111",
          "isAdmin": true,
          "todos": [
             {
-               "title": "jutj",
-               "body": "yujkyuk"
+               "title": "Title0",
+               "body": "Body0"
             }
          ]
       }
