@@ -1,5 +1,3 @@
-const parseJSON = (str) => JSON.stringify(str, null, 3);
+'use strict';
 
-module.exports = {
-  parseJSON
-}
+export const parseJSON = (str) => JSON.stringify(str, null, 3);

@@ -1,6 +1,9 @@
 # infotech
 Test task
 
+## See
+![🎞️ here must be presentation video, please wait, or page reload can help](https://drive.google.com/uc?export=view&id=1qpapzCdZPdqXXNWihjVZYj7N3aUtdzaZ)
+
 ## Steps to run
 1. Must have:
     * Node.JS

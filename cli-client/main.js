@@ -1,7 +1,15 @@
-const { Questioner } =  require('cli-features');
-const http =  require('http');
+'use strict';
 
-const parseJSON = (str) => JSON.stringify(str, null, 3);
+import { Questioner } from 'cli-features';
+import http from 'http';
+import { parseJSON } from '../server/utils.js';
+
+const {
+  generalQuestion, passQuestion, alternativeQuestion,
+} = new Questioner({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 const makeOptions = ({
                        path = '', port = 8000,
@@ -24,15 +32,12 @@ const speak = (options) => {
       'Content-Length': Buffer.byteLength(body),
     };
   }
+
   return new Promise((resolve) => {
     const callback = response => {
       let str = '';
-      response.on('data', function(chunk) {
-        str += chunk;
-      });
-      response.on('end', function() {
-        resolve(str);
-      });
+      response.on('data', (chunk) => str += chunk);
+      response.on('end', () => resolve(str));
     };
 
     let req = http.request(makeOptions(options), callback);
@@ -40,13 +45,6 @@ const speak = (options) => {
     req.end();
   });
 };
-
-const {
-  generalQuestion, passQuestion, alternativeQuestion,
-} = new Questioner({
-  input: process.stdin,
-  output: process.stdout,
-});
 
 const PASS_Q = 'What is your password?';
 const EMAIL_Q = 'What is your email?';
@@ -69,50 +67,41 @@ const authorization = async () => {
 (async () => {
   while (await authorization() === 'false') {
   }
-  const todos = await speak({ path: 'todos', body: { email, password } });
-  console.log(todos);
-  const doWhat = ['See todos', 'Add todo', 'Update todo', 'Delete todo', 'Exit'];
+
+  console.log(await speak({ path: 'todos', body: { email, password } }));
+
   const DO_Q = 'What do you want to do?';
-  while (true) {
-    const answer = await alternativeQuestion(DO_Q, doWhat);
-    switch (answer) {
-      case 'See todos': {
-        console.log(await speak({
-          path: 'todos', body: { email, password }
-        }));
-        break;
-      }
-      case 'Add todo': {
-        const TITLE_Q = 'Title:';
-        const BODY_Q = 'Body:';
-        const title = await generalQuestion(TITLE_Q);
-        const body = await generalQuestion(BODY_Q);
-        await speak({
-          path: 'todos', method: 'POST', body: { title, body, email, password },
-        });
-        break;
-      }
-      case 'Update todo': {
-        const TITLE_Q = 'Title:';
-        const BODY_Q = 'Body:';
-        const title = await generalQuestion(TITLE_Q);
-        const body = await generalQuestion(BODY_Q);
-        await speak({
-          path: 'todos', method: 'PUT', body: { title, body, email, password },
-        });
-        break;
-      }
-      case 'Delete todo': {
-        const TITLE_Q = 'Title:';
-        const title = await generalQuestion(TITLE_Q);
-        await speak({
-          path: 'todos', method: 'DELETE', body: { title, email, password },
-        });
-        break;
-      }
-      case 'Exit': {
-        return process.exit();
-      }
-    }
-  }
+  const TITLE_Q = 'Title:';
+  const BODY_Q = 'Body:';
+
+  const doWhat = {
+    'See todos': async () => console.log(
+      await speak({ path: 'todos', body: { email, password } }),
+    ),
+    'Add todo': async () => {
+      const title = await generalQuestion(TITLE_Q);
+      const body = await generalQuestion(BODY_Q);
+      await speak({
+        path: 'todos', method: 'POST', body: { title, body, email, password },
+      });
+    },
+    'Update todo': async () => {
+      const title = await generalQuestion(TITLE_Q);
+      const body = await generalQuestion(BODY_Q);
+      await speak({
+        path: 'todos', method: 'PUT', body: { title, body, email, password },
+      });
+    },
+    'Delete todo': async () => {
+      const title = await generalQuestion(TITLE_Q);
+      await speak({
+        path: 'todos', method: 'DELETE', body: { title, email, password },
+      });
+    },
+    'Exit': () => process.exit(),
+  };
+
+  while (true) await doWhat[
+    await alternativeQuestion(DO_Q, Object.keys(doWhat))
+    ]();
 })();

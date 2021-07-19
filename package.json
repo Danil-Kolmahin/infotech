@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Create NodeJS application suite to manage ToDoList",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "server": "node server/main.js",
     "client": "node cli-client/main.js"

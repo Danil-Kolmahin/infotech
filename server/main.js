@@ -1,8 +1,8 @@
 'use strict';
 
-const http =  require('http');
-const { addTodo, deleteTodo, getTodos, getUser, updateTodo } =  require('./dbLogic');
-const { parseJSON } =  require('./utils');
+import http from 'http';
+import { addTodo, deleteTodo, getTodos, getUser, updateTodo } from './db.js';
+import { parseJSON } from './utils.js';
 
 const PORT = process.env.PORT ?? 8000;
 
