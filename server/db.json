@@ -1,0 +1,26 @@
+{
+   "users": [
+      {
+         "email": "a",
+         "password": "123",
+         "isAdmin": false,
+         "todos": [
+            {
+               "title": "sdfsdf",
+               "body": "sdfsdsfsfsdf"
+            }
+         ]
+      },
+      {
+         "email": "b",
+         "password": "123",
+         "isAdmin": true,
+         "todos": [
+            {
+               "title": "jutj",
+               "body": "yujkyuk"
+            }
+         ]
+      }
+   ]
+}
